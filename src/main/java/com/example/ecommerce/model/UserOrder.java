@@ -8,6 +8,7 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -39,4 +40,12 @@ public class UserOrder {
     @JsonProperty
     @Column
     private BigDecimal total;
+
+    public static UserOrder cartToOrderConverter(Cart cart) {
+        UserOrder order = new UserOrder();
+        order.setItems(new ArrayList<>(cart.getItems()));
+        order.setTotal(cart.getTotal());
+        order.setUser(cart.getUser());
+        return order;
+    }
 }
