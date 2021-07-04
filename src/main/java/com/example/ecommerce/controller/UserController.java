@@ -56,6 +56,7 @@ public class UserController {
      * @param createUserRequest
      * @return
      */
+    @PostMapping("/create")
     public ResponseEntity<?> createUser(@RequestBody CreateUserRequestDTO createUserRequest) {
 
         User user = new User();
