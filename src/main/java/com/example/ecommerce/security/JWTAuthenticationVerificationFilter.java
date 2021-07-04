@@ -3,6 +3,8 @@ package com.example.ecommerce.security;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.example.ecommerce.constants.SecurityConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -15,7 +17,9 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
 
-public class JWTAuthenticationVerificationFilter  extends BasicAuthenticationFilter {
+public class JWTAuthenticationVerificationFilter extends BasicAuthenticationFilter {
+
+    private static final Logger log = LoggerFactory.getLogger(JWTAuthenticationVerificationFilter.class);
 
     public JWTAuthenticationVerificationFilter(AuthenticationManager authManager) {
         super(authManager);
@@ -26,25 +30,29 @@ public class JWTAuthenticationVerificationFilter  extends BasicAuthenticationFil
                                     HttpServletResponse res,
                                     FilterChain chain) throws IOException, ServletException {
 
-        //get authorization from header
         String header = req.getHeader(SecurityConstants.HEADER_STRING);
 
-        //check token
-        if (header == null || !header.startsWith(SecurityConstants.TOKEN_PREFIX)) {
+        try {
+            if (header == null || !header.startsWith(SecurityConstants.TOKEN_PREFIX)) {
+                chain.doFilter(req, res);
+                return;
+            }
+
+            UsernamePasswordAuthenticationToken authentication = getAuthentication(req);
+
+            SecurityContextHolder.getContext().setAuthentication(authentication);
             chain.doFilter(req, res);
-            return;
+        } catch (IOException | ServletException e) {
+            log.error("EXCEPTION: Authorization failed.");
+            throw new RuntimeException(e);
         }
-
-        UsernamePasswordAuthenticationToken authentication = getAuthentication(req);
-
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        chain.doFilter(req, res);
     }
 
     private UsernamePasswordAuthenticationToken getAuthentication(HttpServletRequest request) {
-        String token = request.getHeader(SecurityConstants.HEADER_STRING);
 
+        String token = request.getHeader(SecurityConstants.HEADER_STRING);
         if (token != null) {
+            // parse the token.
             String user = JWT.require(Algorithm.HMAC512(SecurityConstants.SECRET.getBytes()))
                     .build()
                     .verify(token.replace(SecurityConstants.TOKEN_PREFIX, ""))

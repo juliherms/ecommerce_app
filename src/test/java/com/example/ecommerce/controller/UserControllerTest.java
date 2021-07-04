@@ -37,6 +37,40 @@ public class UserControllerTest {
     }
 
     @Test
+    public void createUserWithPasswordNotMatchError(){
+
+        when(encoder.encode("testPassword")).thenReturn("thisIsHashed");
+
+        CreateUserRequestDTO request = new CreateUserRequestDTO();
+        request.setUsername("test");
+        request.setPassword("testPassword");
+        request.setConfirmPassword("testPassword2");
+
+        ResponseEntity<?> response = userController.createUser(request);
+
+        assertNotNull(response);
+        assertEquals(400, response.getStatusCodeValue());
+
+    }
+
+    @Test
+    public void createUserWithPasswordNotMinCharacterError(){
+
+        when(encoder.encode("testPassword")).thenReturn("thisIsHashed");
+
+        CreateUserRequestDTO request = new CreateUserRequestDTO();
+        request.setUsername("test");
+        request.setPassword("123");
+        request.setConfirmPassword("123");
+
+        ResponseEntity<?> response = userController.createUser(request);
+
+        assertNotNull(response);
+        assertEquals(400, response.getStatusCodeValue());
+
+    }
+
+    @Test
     public void createUserAndGenerateYourHashSuccess(){
 
         when(encoder.encode("testPassword")).thenReturn("thisIsHashed");

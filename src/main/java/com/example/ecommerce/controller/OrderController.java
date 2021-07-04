@@ -32,15 +32,13 @@ public class OrderController {
 
         User user = userRepository.findByUsername(username);
 
-        if(user == null) {
+        if (user == null) {
             log.error("[submit] [Error] for user : " + username +", REASON : User not found" );
             return ResponseEntity.notFound().build();
         }
         UserOrder order = UserOrder.cartToOrderConverter(user.getCart());
         orderRepository.save(order);
-
-        log.info("[submit] [Success] for user : " + user.getUsername());
-
+        log.info("Order submitted successfully.");
         return ResponseEntity.ok(order);
     }
 

@@ -3,6 +3,7 @@ package com.example.ecommerce.controller;
 import com.example.ecommerce.dto.ModifyCartRequestDTO;
 import com.example.ecommerce.model.Cart;
 import com.example.ecommerce.model.Item;
+import com.example.ecommerce.model.User;
 import com.example.ecommerce.repositories.CartRepository;
 import com.example.ecommerce.repositories.ItemRepository;
 import com.example.ecommerce.repositories.UserRepository;
@@ -126,4 +127,5 @@ public class CartControllerTest {
             verify(userRepository, times(2)).findByUsername("invalidUser");
 
         }
+
 }

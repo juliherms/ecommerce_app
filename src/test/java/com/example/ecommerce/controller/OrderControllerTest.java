@@ -81,4 +81,12 @@ public class OrderControllerTest {
 
     }
 
+    @Test
+    public void verifyGetOrderForUserError(){
+
+        ResponseEntity<List<UserOrder>> response = orderController.getOrdersForUser("usertest");
+        assertNotNull(response);
+        assertEquals(404, response.getStatusCodeValue());
+    }
+
 }
